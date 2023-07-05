@@ -128,19 +128,6 @@ describe('ReactDOMServerPartialHydration', () => {
     IdleEventPriority = require('react-reconciler/constants').IdleEventPriority;
   });
 
-  // Note: This is based on a similar component we use in www. We can delete
-  // once the extra div wrapper is no longer necessary.
-  function LegacyHiddenDiv({children, mode}) {
-    return (
-      <div hidden={mode === 'hidden'}>
-        <React.unstable_LegacyHidden
-          mode={mode === 'hidden' ? 'unstable-defer-without-hiding' : mode}>
-          {children}
-        </React.unstable_LegacyHidden>
-      </div>
-    );
-  }
-
   it('hydrates a parent even if a child Suspense boundary is blocked', async () => {
     let suspend = false;
     let resolve;
@@ -3074,9 +3061,9 @@ describe('ReactDOMServerPartialHydration', () => {
 
     function App() {
       return (
-        <LegacyHiddenDiv mode="hidden">
+        <React.unstable_Offscreen mode="hidden">
           <span ref={ref}>Hidden child</span>
-        </LegacyHiddenDiv>
+        </React.unstable_Offscreen>
       );
     }
 
@@ -3098,57 +3085,6 @@ describe('ReactDOMServerPartialHydration', () => {
 
     expect(ref.current).toBe(span);
     expect(span.innerHTML).toBe('Hidden child');
-  });
-
-  // @gate www
-  it('renders a hidden LegacyHidden component inside a Suspense boundary', async () => {
-    const ref = React.createRef();
-
-    function App() {
-      return (
-        <Suspense fallback="Loading...">
-          <LegacyHiddenDiv mode="hidden">
-            <span ref={ref}>Hidden child</span>
-          </LegacyHiddenDiv>
-        </Suspense>
-      );
-    }
-
-    const finalHTML = ReactDOMServer.renderToString(<App />);
-
-    const container = document.createElement('div');
-    container.innerHTML = finalHTML;
-
-    const span = container.getElementsByTagName('span')[0];
-    expect(span.innerHTML).toBe('Hidden child');
-
-    await act(() => ReactDOMClient.hydrateRoot(container, <App />));
-    expect(ref.current).toBe(span);
-    expect(span.innerHTML).toBe('Hidden child');
-  });
-
-  // @gate www
-  it('renders a visible LegacyHidden component', async () => {
-    const ref = React.createRef();
-
-    function App() {
-      return (
-        <LegacyHiddenDiv mode="visible">
-          <span ref={ref}>Hidden child</span>
-        </LegacyHiddenDiv>
-      );
-    }
-
-    const finalHTML = ReactDOMServer.renderToString(<App />);
-
-    const container = document.createElement('div');
-    container.innerHTML = finalHTML;
-
-    const span = container.getElementsByTagName('span')[0];
-
-    await act(() => ReactDOMClient.hydrateRoot(container, <App />));
-    expect(ref.current).toBe(span);
-    expect(ref.current.innerHTML).toBe('Hidden child');
   });
 
   // @gate enableOffscreen

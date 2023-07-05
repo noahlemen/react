@@ -10,8 +10,6 @@
 import type {ReactContext, ReactProviderType} from 'shared/ReactTypes';
 import type {Fiber} from './ReactInternalTypes';
 
-import {enableLegacyHidden} from 'shared/ReactFeatureFlags';
-
 import {
   FunctionComponent,
   ClassComponent,
@@ -37,7 +35,6 @@ import {
   SuspenseListComponent,
   ScopeComponent,
   OffscreenComponent,
-  LegacyHiddenComponent,
   CacheComponent,
   TracingMarkerComponent,
 } from 'react-reconciler/src/ReactWorkTags';
@@ -125,10 +122,6 @@ export default function getComponentNameFromFiber(fiber: Fiber): string | null {
         return type;
       }
       break;
-    case LegacyHiddenComponent:
-      if (enableLegacyHidden) {
-        return 'LegacyHidden';
-      }
   }
 
   return null;

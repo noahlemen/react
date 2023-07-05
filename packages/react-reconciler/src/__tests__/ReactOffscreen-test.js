@@ -2,7 +2,6 @@ let React;
 let ReactNoop;
 let Scheduler;
 let act;
-let LegacyHidden;
 let Offscreen;
 let useState;
 let useLayoutEffect;
@@ -22,7 +21,6 @@ describe('ReactOffscreen', () => {
     ReactNoop = require('react-noop-renderer');
     Scheduler = require('scheduler');
     act = require('internal-test-utils').act;
-    LegacyHidden = React.unstable_LegacyHidden;
     Offscreen = React.unstable_Offscreen;
     useState = React.useState;
     useLayoutEffect = React.useLayoutEffect;
@@ -59,65 +57,6 @@ describe('ReactOffscreen', () => {
     return <Text text={text}>{children}</Text>;
   }
 
-  // @gate enableLegacyHidden
-  it('unstable-defer-without-hiding should never toggle the visibility of its children', async () => {
-    function App({mode}) {
-      return (
-        <>
-          <Text text="Normal" />
-          <LegacyHidden mode={mode}>
-            <Text text="Deferred" />
-          </LegacyHidden>
-        </>
-      );
-    }
-
-    // Test the initial mount
-    const root = ReactNoop.createRoot();
-    await act(async () => {
-      root.render(<App mode="unstable-defer-without-hiding" />);
-      await waitForPaint(['Normal']);
-      expect(root).toMatchRenderedOutput(<span prop="Normal" />);
-    });
-    assertLog(['Deferred']);
-    expect(root).toMatchRenderedOutput(
-      <>
-        <span prop="Normal" />
-        <span prop="Deferred" />
-      </>,
-    );
-
-    // Now try after an update
-    await act(() => {
-      root.render(<App mode="visible" />);
-    });
-    assertLog(['Normal', 'Deferred']);
-    expect(root).toMatchRenderedOutput(
-      <>
-        <span prop="Normal" />
-        <span prop="Deferred" />
-      </>,
-    );
-
-    await act(async () => {
-      root.render(<App mode="unstable-defer-without-hiding" />);
-      await waitForPaint(['Normal']);
-      expect(root).toMatchRenderedOutput(
-        <>
-          <span prop="Normal" />
-          <span prop="Deferred" />
-        </>,
-      );
-    });
-    assertLog(['Deferred']);
-    expect(root).toMatchRenderedOutput(
-      <>
-        <span prop="Normal" />
-        <span prop="Deferred" />
-      </>,
-    );
-  });
-
   // @gate www
   it('does not defer in legacy mode', async () => {
     let setState;
@@ -131,9 +70,9 @@ describe('ReactOffscreen', () => {
     await act(() => {
       root.render(
         <>
-          <LegacyHidden mode="hidden">
+          <React.unstable_Offscreen mode="hidden">
             <Foo />
-          </LegacyHidden>
+          </React.unstable_Offscreen>
           <Text text="Outside" />
         </>,
       );
@@ -176,9 +115,9 @@ describe('ReactOffscreen', () => {
     await act(async () => {
       root.render(
         <>
-          <LegacyHidden mode="hidden">
+          <React.unstable_Offscreen mode="hidden">
             <Foo />
-          </LegacyHidden>
+          </React.unstable_Offscreen>
           <Text text="Outside" />
         </>,
       );
@@ -481,54 +420,6 @@ describe('ReactOffscreen', () => {
 
     // After the layout effect is unmounted, the child is hidden.
     expect(root).toMatchRenderedOutput(<span hidden={true} prop="Child" />);
-  });
-
-  // @gate enableLegacyHidden
-  it('does not toggle effects for LegacyHidden component', async () => {
-    // LegacyHidden is meant to be the same as offscreen except it doesn't
-    // do anything to effects. Only used by www, as a temporary migration step.
-    function Child({text}) {
-      useLayoutEffect(() => {
-        Scheduler.log('Mount layout');
-        return () => {
-          Scheduler.log('Unmount layout');
-        };
-      }, []);
-      return <Text text="Child" />;
-    }
-
-    const root = ReactNoop.createRoot();
-    await act(() => {
-      root.render(
-        <LegacyHidden mode="visible">
-          <Child />
-        </LegacyHidden>,
-      );
-    });
-    assertLog(['Child', 'Mount layout']);
-
-    await act(() => {
-      root.render(
-        <LegacyHidden mode="hidden">
-          <Child />
-        </LegacyHidden>,
-      );
-    });
-    assertLog(['Child']);
-
-    await act(() => {
-      root.render(
-        <LegacyHidden mode="visible">
-          <Child />
-        </LegacyHidden>,
-      );
-    });
-    assertLog(['Child']);
-
-    await act(() => {
-      root.render(null);
-    });
-    assertLog(['Unmount layout']);
   });
 
   // @gate enableOffscreen
@@ -1067,62 +958,6 @@ describe('ReactOffscreen', () => {
       // were skipped during pre-rendering.
       'Mount More',
     ]);
-  });
-
-  // @gate enableLegacyHidden
-  it('do not defer passive effects when prerendering a new LegacyHidden tree', async () => {
-    function Child({label}) {
-      useEffect(() => {
-        Scheduler.log('Mount ' + label);
-        return () => {
-          Scheduler.log('Unmount ' + label);
-        };
-      }, [label]);
-      return <Text text={label} />;
-    }
-
-    function App({showMore}) {
-      return (
-        <>
-          <Child label="Shell" />
-          <LegacyHidden
-            mode={showMore ? 'visible' : 'unstable-defer-without-hiding'}>
-            <Child label="More" />
-          </LegacyHidden>
-        </>
-      );
-    }
-
-    const root = ReactNoop.createRoot();
-
-    // Mount the app without showing the extra content
-    await act(() => {
-      root.render(<App showMore={false} />);
-    });
-    assertLog([
-      // First mount the outer visible shell
-      'Shell',
-      'Mount Shell',
-
-      // Then prerender the hidden extra context. Unlike Offscreen, the passive
-      // effects in the hidden tree *should* fire
-      'More',
-      'Mount More',
-    ]);
-
-    // The hidden content has been prerendered
-    expect(root).toMatchRenderedOutput(
-      <>
-        <span prop="Shell" />
-        <span prop="More" />
-      </>,
-    );
-
-    // Reveal the prerendered tree
-    await act(() => {
-      root.render(<App showMore={true} />);
-    });
-    assertLog(['Shell', 'More']);
   });
 
   // @gate enableOffscreen

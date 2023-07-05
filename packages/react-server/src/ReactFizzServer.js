@@ -115,7 +115,6 @@ import {
   REACT_PORTAL_TYPE,
   REACT_LAZY_TYPE,
   REACT_SUSPENSE_TYPE,
-  REACT_LEGACY_HIDDEN_TYPE,
   REACT_DEBUG_TRACING_MODE_TYPE,
   REACT_STRICT_MODE_TYPE,
   REACT_PROFILER_TYPE,
@@ -1204,16 +1203,6 @@ function renderElement(
   }
 
   switch (type) {
-    // LegacyHidden acts the same as a fragment. This only works because we
-    // currently assume that every instance of LegacyHidden is accompanied by a
-    // host component wrapper. In the hidden mode, the host component is given a
-    // `hidden` attribute, which ensures that the initial HTML is not visible.
-    // To support the use of LegacyHidden as a true fragment, without an extra
-    // DOM node, we would have to hide the initial HTML in some other way.
-    // TODO: Delete in LegacyHidden. It's an unstable API only used in the
-    // www build. As a migration step, we could add a special prop to Offscreen
-    // that simulates the old behavior (no hiding, no change to effects).
-    case REACT_LEGACY_HIDDEN_TYPE:
     case REACT_DEBUG_TRACING_MODE_TYPE:
     case REACT_STRICT_MODE_TYPE:
     case REACT_PROFILER_TYPE:

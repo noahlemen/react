@@ -54,19 +54,6 @@ describe('ReactNewContext', () => {
     return dispatcher.readContext(Context);
   }
 
-  // Note: This is based on a similar component we use in www. We can delete
-  // once the extra div wrapper is no longer necessary.
-  function LegacyHiddenDiv({children, mode}) {
-    return (
-      <div hidden={mode === 'hidden'}>
-        <React.unstable_LegacyHidden
-          mode={mode === 'hidden' ? 'unstable-defer-without-hiding' : mode}>
-          {children}
-        </React.unstable_LegacyHidden>
-      </div>
-    );
-  }
-
   // We have several ways of reading from context. sharedContextTests runs
   // a suite of tests for a given context consumer implementation.
   sharedContextTests('Context.Consumer', Context => Context.Consumer);
@@ -708,9 +695,9 @@ describe('ReactNewContext', () => {
         function App({theme}) {
           return (
             <Context.Provider value={theme}>
-              <LegacyHiddenDiv mode="hidden">
+              <React.unstable_Offscreen mode="hidden">
                 <Consumer>{value => <Text text={value} />}</Consumer>
-              </LegacyHiddenDiv>
+              </React.unstable_Offscreen>
             </Context.Provider>
           );
         }

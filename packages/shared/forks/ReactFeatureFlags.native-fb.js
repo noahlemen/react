@@ -65,7 +65,6 @@ export const createRootStrictEffectsByDefault = false;
 
 export const disableSchedulerTimeoutInWorkLoop = false;
 export const enableLazyContextPropagation = false;
-export const enableLegacyHidden = true;
 export const forceConcurrentByDefaultForTesting = false;
 export const enableUnifiedSyncLane = false;
 export const allowConcurrentByDefault = true;

@@ -35,19 +35,6 @@ describe('ReactUpdates', () => {
     assertLog = InternalTestUtils.assertLog;
   });
 
-  // Note: This is based on a similar component we use in www. We can delete
-  // once the extra div wrapper is no longer necessary.
-  function LegacyHiddenDiv({children, mode}) {
-    return (
-      <div hidden={mode === 'hidden'}>
-        <React.unstable_LegacyHidden
-          mode={mode === 'hidden' ? 'unstable-defer-without-hiding' : mode}>
-          {children}
-        </React.unstable_LegacyHidden>
-      </div>
-    );
-  }
-
   it('should batch state when updating state twice', () => {
     let updateCount = 0;
 
@@ -1350,9 +1337,9 @@ describe('ReactUpdates', () => {
       });
       return (
         <div>
-          <LegacyHiddenDiv mode="hidden">
+          <React.unstable_OffscreenenDiv mode="hidden">
             <Bar />
-          </LegacyHiddenDiv>
+          </React.unstable_OffscreenenDiv>
           <Baz />
         </div>
       );

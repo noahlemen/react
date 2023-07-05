@@ -32,7 +32,6 @@ import {
   enableCache,
   enableProfilerTimer,
   enableScopeAPI,
-  enableLegacyHidden,
   forceConcurrentByDefaultForTesting,
   allowConcurrentByDefault,
   enableTransitionTracing,
@@ -67,7 +66,6 @@ import {
   LazyComponent,
   ScopeComponent,
   OffscreenComponent,
-  LegacyHiddenComponent,
   CacheComponent,
   TracingMarkerComponent,
 } from './ReactWorkTags';
@@ -104,7 +102,6 @@ import {
   REACT_LAZY_TYPE,
   REACT_SCOPE_TYPE,
   REACT_OFFSCREEN_TYPE,
-  REACT_LEGACY_HIDDEN_TYPE,
   REACT_CACHE_TYPE,
   REACT_TRACING_MARKER_TYPE,
 } from 'shared/ReactSymbols';
@@ -557,10 +554,6 @@ export function createFiberFromTypeAndProps(
         return createFiberFromSuspenseList(pendingProps, mode, lanes, key);
       case REACT_OFFSCREEN_TYPE:
         return createFiberFromOffscreen(pendingProps, mode, lanes, key);
-      case REACT_LEGACY_HIDDEN_TYPE:
-        if (enableLegacyHidden) {
-          return createFiberFromLegacyHidden(pendingProps, mode, lanes, key);
-        }
       // Fall through
       case REACT_SCOPE_TYPE:
         if (enableScopeAPI) {
@@ -774,31 +767,6 @@ export function createFiberFromOffscreen(
     attach: () => attachOffscreenInstance(primaryChildInstance),
   };
   fiber.stateNode = primaryChildInstance;
-  return fiber;
-}
-
-export function createFiberFromLegacyHidden(
-  pendingProps: OffscreenProps,
-  mode: TypeOfMode,
-  lanes: Lanes,
-  key: null | string,
-): Fiber {
-  const fiber = createFiber(LegacyHiddenComponent, pendingProps, key, mode);
-  fiber.elementType = REACT_LEGACY_HIDDEN_TYPE;
-  fiber.lanes = lanes;
-  // Adding a stateNode for legacy hidden because it's currently using
-  // the offscreen implementation, which depends on a state node
-  const instance: OffscreenInstance = {
-    _visibility: OffscreenVisible,
-    _pendingVisibility: OffscreenVisible,
-    _pendingMarkers: null,
-    _transitions: null,
-    _retryCache: null,
-    _current: null,
-    detach: () => detachOffscreenInstance(instance),
-    attach: () => attachOffscreenInstance(instance),
-  };
-  fiber.stateNode = instance;
   return fiber;
 }
 

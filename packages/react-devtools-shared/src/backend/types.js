@@ -60,7 +60,6 @@ export type WorkTagMap = {
   IncompleteClassComponent: WorkTag,
   IndeterminateComponent: WorkTag,
   LazyComponent: WorkTag,
-  LegacyHiddenComponent: WorkTag,
   MemoComponent: WorkTag,
   Mode: WorkTag,
   OffscreenComponent: WorkTag,

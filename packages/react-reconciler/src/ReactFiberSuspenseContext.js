@@ -107,7 +107,6 @@ export function pushFallbackTreeSuspenseHandler(fiber: Fiber): void {
 }
 
 export function pushOffscreenSuspenseHandler(fiber: Fiber): void {
-  if (fiber.tag === OffscreenComponent) {
     // A SuspenseList context is only pushed here to avoid a push/pop mismatch.
     // Reuse the current value on the stack.
     // TODO: We can avoid needing to push here by by forking popSuspenseHandler
@@ -128,10 +127,6 @@ export function pushOffscreenSuspenseHandler(fiber: Fiber): void {
         }
       }
     }
-  } else {
-    // This is a LegacyHidden component.
-    reuseSuspenseHandlerOnStack(fiber);
-  }
 }
 
 export function reuseSuspenseHandlerOnStack(fiber: Fiber) {

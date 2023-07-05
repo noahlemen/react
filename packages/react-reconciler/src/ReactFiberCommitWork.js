@@ -52,7 +52,6 @@ import {
   enableTransitionTracing,
   enableUseEffectEventHook,
   enableFloat,
-  enableLegacyHidden,
   enableHostSingletons,
   diffInCommitPhase,
   alwaysThrottleRetries,
@@ -76,7 +75,6 @@ import {
   SuspenseListComponent,
   ScopeComponent,
   OffscreenComponent,
-  LegacyHiddenComponent,
   CacheComponent,
   TracingMarkerComponent,
 } from './ReactWorkTags';
@@ -1559,8 +1557,7 @@ function hideOrUnhideAllChildren(finishedWork: Fiber, isHidden: boolean) {
           }
         }
       } else if (
-        (node.tag === OffscreenComponent ||
-          node.tag === LegacyHiddenComponent) &&
+        node.tag === OffscreenComponent &&
         (node.memoizedState: OffscreenState) !== null &&
         node !== finishedWork
       ) {
@@ -3675,23 +3672,6 @@ function commitPassiveMountOnFiber(
       }
       break;
     }
-    case LegacyHiddenComponent: {
-      if (enableLegacyHidden) {
-        recursivelyTraversePassiveMountEffects(
-          finishedRoot,
-          finishedWork,
-          committedLanes,
-          committedTransitions,
-        );
-
-        if (flags & Passive) {
-          const current = finishedWork.alternate;
-          const instance: OffscreenInstance = finishedWork.stateNode;
-          commitOffscreenPassiveMountEffects(current, finishedWork, instance);
-        }
-      }
-      break;
-    }
     case OffscreenComponent: {
       // TODO: Pass `current` as argument to this function
       const instance: OffscreenInstance = finishedWork.stateNode;
@@ -3863,31 +3843,6 @@ export function reconnectPassiveEffects(
       );
       // TODO: Check for PassiveStatic flag
       commitHookPassiveMountEffects(finishedWork, HookPassive);
-      break;
-    }
-    // Unlike commitPassiveMountOnFiber, we don't need to handle HostRoot
-    // because this function only visits nodes that are inside an
-    // Offscreen fiber.
-    // case HostRoot: {
-    //  ...
-    // }
-    case LegacyHiddenComponent: {
-      if (enableLegacyHidden) {
-        recursivelyTraverseReconnectPassiveEffects(
-          finishedRoot,
-          finishedWork,
-          committedLanes,
-          committedTransitions,
-          includeWorkInProgressEffects,
-        );
-
-        if (includeWorkInProgressEffects && flags & Passive) {
-          // TODO: Pass `current` as argument to this function
-          const current: Fiber | null = finishedWork.alternate;
-          const instance: OffscreenInstance = finishedWork.stateNode;
-          commitOffscreenPassiveMountEffects(current, finishedWork, instance);
-        }
-      }
       break;
     }
     case OffscreenComponent: {
@@ -4458,7 +4413,6 @@ function commitPassiveUnmountInsideDeletedTreeOnFiber(
     //   }
     //   break;
     // }
-    case LegacyHiddenComponent:
     case OffscreenComponent: {
       if (enableCache) {
         if (

@@ -552,7 +552,7 @@ describe('ReactLazyContextPropagation', () => {
 
   // @gate www
   test('context is propagated through offscreen trees', async () => {
-    const LegacyHidden = React.unstable_LegacyHidden;
+    const Offscreen = React.unstable_Offscreen;
 
     const root = ReactNoop.createRoot();
 
@@ -564,9 +564,9 @@ describe('ReactLazyContextPropagation', () => {
       setContext = setValue;
       return (
         <Context.Provider value={value}>
-          <LegacyHidden mode="hidden">
+          <Offscreen mode="hidden">
             <Indirection />
-          </LegacyHidden>
+          </Offscreen>
           <Text text={value} />
         </Context.Provider>
       );
@@ -599,7 +599,7 @@ describe('ReactLazyContextPropagation', () => {
   // @gate www
   test('multiple contexts are propagated across through offscreen trees', async () => {
     // Same as previous test, but with multiple context providers
-    const LegacyHidden = React.unstable_LegacyHidden;
+    const Offscreen = React.unstable_Offscreen;
 
     const root = ReactNoop.createRoot();
 
@@ -613,10 +613,10 @@ describe('ReactLazyContextPropagation', () => {
       return (
         <Context1.Provider value={value}>
           <Context2.Provider value={value}>
-            <LegacyHidden mode="hidden">
+            <Offscreen mode="hidden">
               <Indirection1 />
               <Indirection2 />
-            </LegacyHidden>
+            </Offscreen>
             <Text text={value} />
           </Context2.Provider>
         </Context1.Provider>
@@ -827,7 +827,7 @@ describe('ReactLazyContextPropagation', () => {
     // Lazy context propagation will stop propagating when it hits the first
     // match. If we bail out again inside that tree, we must resume propagating.
 
-    const LegacyHidden = React.unstable_LegacyHidden;
+    const Offscreen = React.unstable_Offscreen;
 
     const Context = React.createContext('A');
 
@@ -837,9 +837,9 @@ describe('ReactLazyContextPropagation', () => {
       setContext = setValue;
       return (
         <Context.Provider value={value}>
-          <LegacyHidden mode="hidden">
+          <Offscreen mode="hidden">
             <Child />
-          </LegacyHidden>
+          </Offscreen>
         </Context.Provider>
       );
     }

@@ -31,19 +31,6 @@ describe('ReactIncrementalSideEffects', () => {
     waitForPaint = InternalTestUtils.waitForPaint;
   });
 
-  // Note: This is based on a similar component we use in www. We can delete
-  // once the extra div wrapper is no longer necessary.
-  function LegacyHiddenDiv({children, mode}) {
-    return (
-      <div hidden={mode === 'hidden'}>
-        <React.unstable_LegacyHidden
-          mode={mode === 'hidden' ? 'unstable-defer-without-hiding' : mode}>
-          {children}
-        </React.unstable_LegacyHidden>
-      </div>
-    );
-  }
-
   it('can update child nodes of a host instance', async () => {
     function Bar(props) {
       return <span>{props.text}</span>;
@@ -492,9 +479,9 @@ describe('ReactIncrementalSideEffects', () => {
       Scheduler.log('Foo');
       return (
         <div>
-          <LegacyHiddenDiv mode="hidden">
+          <React.unstable_Offscreen mode="hidden">
             <Middle>{props.text}</Middle>
-          </LegacyHiddenDiv>
+          </React.unstable_Offscreen>
         </div>
       );
     }
@@ -547,7 +534,7 @@ describe('ReactIncrementalSideEffects', () => {
     function Foo(props) {
       Scheduler.log('Foo');
       return (
-        <LegacyHiddenDiv mode="hidden">
+        <React.unstable_Offscreen mode="hidden">
           {props.step === 0 ? (
             <div>
               <Bar>Hi</Bar>
@@ -556,7 +543,7 @@ describe('ReactIncrementalSideEffects', () => {
           ) : (
             middleContent
           )}
-        </LegacyHiddenDiv>
+        </React.unstable_Offscreen>
       );
     }
 
@@ -640,9 +627,9 @@ describe('ReactIncrementalSideEffects', () => {
     function Foo(props) {
       Scheduler.log('Foo');
       return (
-        <LegacyHiddenDiv mode="hidden">
+        <React.unstable_Offscreen mode="hidden">
           <Content step={props.step} text={props.text} />
-        </LegacyHiddenDiv>
+        </React.unstable_Offscreen>
       );
     }
 
@@ -737,9 +724,9 @@ describe('ReactIncrementalSideEffects', () => {
   it('updates a child even though the old props is empty', async () => {
     function Foo(props) {
       return (
-        <LegacyHiddenDiv mode="hidden">
+        <React.unstable_Offscreen mode="hidden">
           <span prop={1} />
-        </LegacyHiddenDiv>
+        </React.unstable_Offscreen>
       );
     }
 
@@ -1007,11 +994,11 @@ describe('ReactIncrementalSideEffects', () => {
       return (
         <div>
           <span prop={props.tick} />
-          <LegacyHiddenDiv mode="hidden">
+          <React.unstable_Offscreen mode="hidden">
             <Bar idx={props.idx} />
             <Bar idx={props.idx} />
             <Bar idx={props.idx} />
-          </LegacyHiddenDiv>
+          </React.unstable_Offscreen>
         </div>
       );
     }

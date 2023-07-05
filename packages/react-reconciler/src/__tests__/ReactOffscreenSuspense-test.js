@@ -2,7 +2,6 @@ let React;
 let ReactNoop;
 let Scheduler;
 let act;
-let LegacyHidden;
 let Offscreen;
 let Suspense;
 let useState;
@@ -21,7 +20,6 @@ describe('ReactOffscreen', () => {
     ReactNoop = require('react-noop-renderer');
     Scheduler = require('scheduler');
     act = require('internal-test-utils').act;
-    LegacyHidden = React.unstable_LegacyHidden;
     Offscreen = React.unstable_Offscreen;
     Suspense = React.Suspense;
     useState = React.useState;
@@ -136,40 +134,6 @@ describe('ReactOffscreen', () => {
       <>
         <span>Visible</span>
         <span hidden={true}>Hidden</span>
-      </>,
-    );
-  });
-
-  // @gate www
-  test('LegacyHidden does not handle suspense', async () => {
-    const root = ReactNoop.createRoot();
-
-    function App() {
-      return (
-        <Suspense fallback={<Text text="Loading..." />}>
-          <span>
-            <Text text="Visible" />
-          </span>
-          <LegacyHidden mode="hidden">
-            <span>
-              <AsyncText text="Hidden" />
-            </span>
-          </LegacyHidden>
-        </Suspense>
-      );
-    }
-
-    // Unlike Offscreen, LegacyHidden never captures if something suspends
-    await act(() => {
-      root.render(<App />);
-    });
-    assertLog(['Visible', 'Suspend! [Hidden]', 'Loading...']);
-    // Nearest Suspense boundary switches to a fallback even though the
-    // suspended content is hidden.
-    expect(root).toMatchRenderedOutput(
-      <>
-        <span hidden={true}>Visible</span>
-        Loading...
       </>,
     );
   });

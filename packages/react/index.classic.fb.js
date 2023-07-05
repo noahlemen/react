@@ -36,7 +36,6 @@ export {
   unstable_Cache,
   unstable_TracingMarker,
   unstable_DebugTracingMode,
-  unstable_LegacyHidden,
   unstable_Offscreen,
   unstable_Scope,
   unstable_getCacheSignal,

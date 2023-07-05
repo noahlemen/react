@@ -25,7 +25,6 @@ import {
   SuspenseComponent,
   SuspenseListComponent,
   OffscreenComponent,
-  LegacyHiddenComponent,
   CacheComponent,
   TracingMarkerComponent,
 } from './ReactWorkTags';
@@ -163,8 +162,7 @@ function unwindWork(
       const context: ReactContext<any> = workInProgress.type._context;
       popProvider(context, workInProgress);
       return null;
-    case OffscreenComponent:
-    case LegacyHiddenComponent: {
+    case OffscreenComponent: {
       popSuspenseHandler(workInProgress);
       popHiddenContext(workInProgress);
       popTransition(workInProgress, current);
@@ -254,7 +252,6 @@ function unwindInterruptedWork(
       popProvider(context, interruptedWork);
       break;
     case OffscreenComponent:
-    case LegacyHiddenComponent:
       popSuspenseHandler(interruptedWork);
       popHiddenContext(interruptedWork);
       popTransition(interruptedWork, current);

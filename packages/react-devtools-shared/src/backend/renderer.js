@@ -222,7 +222,6 @@ export function getInternalReactConstants(version: string): {
       IncompleteClassComponent: 17,
       IndeterminateComponent: 2,
       LazyComponent: 16,
-      LegacyHiddenComponent: 23,
       MemoComponent: 14,
       Mode: 8,
       OffscreenComponent: 22, // Experimental
@@ -256,7 +255,6 @@ export function getInternalReactConstants(version: string): {
       IncompleteClassComponent: 17,
       IndeterminateComponent: 2,
       LazyComponent: 16,
-      LegacyHiddenComponent: 24,
       MemoComponent: 14,
       Mode: 8,
       OffscreenComponent: 23, // Experimental
@@ -289,7 +287,6 @@ export function getInternalReactConstants(version: string): {
       IncompleteClassComponent: 17,
       IndeterminateComponent: 2,
       LazyComponent: 16,
-      LegacyHiddenComponent: -1,
       MemoComponent: 14,
       Mode: 8,
       OffscreenComponent: -1, // Experimental
@@ -322,7 +319,6 @@ export function getInternalReactConstants(version: string): {
       IncompleteClassComponent: -1, // Doesn't exist yet
       IndeterminateComponent: 4,
       LazyComponent: -1, // Doesn't exist yet
-      LegacyHiddenComponent: -1,
       MemoComponent: -1, // Doesn't exist yet
       Mode: 10,
       OffscreenComponent: -1, // Experimental
@@ -355,7 +351,6 @@ export function getInternalReactConstants(version: string): {
       IncompleteClassComponent: -1, // Doesn't exist yet
       IndeterminateComponent: 0,
       LazyComponent: -1, // Doesn't exist yet
-      LegacyHiddenComponent: -1,
       MemoComponent: -1, // Doesn't exist yet
       Mode: 11,
       OffscreenComponent: -1, // Experimental
@@ -397,7 +392,6 @@ export function getInternalReactConstants(version: string): {
     HostText,
     Fragment,
     LazyComponent,
-    LegacyHiddenComponent,
     MemoComponent,
     OffscreenComponent,
     Profiler,
@@ -481,8 +475,6 @@ export function getInternalReactConstants(version: string): {
         );
       case SuspenseComponent:
         return 'Suspense';
-      case LegacyHiddenComponent:
-        return 'LegacyHidden';
       case OffscreenComponent:
         return 'Offscreen';
       case ScopeComponent:
@@ -591,7 +583,6 @@ export function attach(
     HostText,
     IncompleteClassComponent,
     IndeterminateComponent,
-    LegacyHiddenComponent,
     MemoComponent,
     OffscreenComponent,
     SimpleMemoComponent,
@@ -956,7 +947,6 @@ export function attach(
         return true;
       case HostPortal:
       case HostText:
-      case LegacyHiddenComponent:
       case OffscreenComponent:
         return true;
       case HostRoot:

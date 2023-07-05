@@ -59,7 +59,6 @@ export const DehydratedFragment = 18;
 export const SuspenseListComponent = 19;
 export const ScopeComponent = 21;
 export const OffscreenComponent = 22;
-export const LegacyHiddenComponent = 23;
 export const CacheComponent = 24;
 export const TracingMarkerComponent = 25;
 export const HostHoistable = 26;

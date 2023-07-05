@@ -52,19 +52,6 @@ describe('ReactIncrementalErrorHandling', () => {
     );
   }
 
-  // Note: This is based on a similar component we use in www. We can delete
-  // once the extra div wrapper is no longer necessary.
-  function LegacyHiddenDiv({children, mode}) {
-    return (
-      <div hidden={mode === 'hidden'}>
-        <React.unstable_LegacyHidden
-          mode={mode === 'hidden' ? 'unstable-defer-without-hiding' : mode}>
-          {children}
-        </React.unstable_LegacyHidden>
-      </div>
-    );
-  }
-
   it('recovers from errors asynchronously', async () => {
     class ErrorBoundary extends React.Component {
       state = {error: null};
@@ -303,9 +290,9 @@ describe('ReactIncrementalErrorHandling', () => {
       return (
         <>
           Everything is fine
-          <LegacyHiddenDiv mode="hidden">
+          <React.unstable_Offscreen mode="hidden">
             <div>Offscreen content</div>
-          </LegacyHiddenDiv>
+          </React.unstable_Offscreen>
         </>
       );
     }

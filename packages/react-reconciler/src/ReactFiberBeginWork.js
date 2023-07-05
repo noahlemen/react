@@ -70,7 +70,6 @@ import {
   IncompleteClassComponent,
   ScopeComponent,
   OffscreenComponent,
-  LegacyHiddenComponent,
   CacheComponent,
   TracingMarkerComponent,
 } from './ReactWorkTags';
@@ -103,7 +102,6 @@ import {
   enableLazyContextPropagation,
   enableSchedulingProfiler,
   enableTransitionTracing,
-  enableLegacyHidden,
   enableCPUSuspense,
   enableFloat,
   enableHostSingletons,
@@ -699,8 +697,7 @@ function updateOffscreenComponent(
 
   if (
     nextProps.mode === 'hidden' ||
-    (enableLegacyHidden &&
-      nextProps.mode === 'unstable-defer-without-hiding') ||
+    
     nextIsDetached
   ) {
     // Rendering a hidden tree.
@@ -909,11 +906,6 @@ function deferHiddenOffscreenComponent(
 
   return null;
 }
-
-// Note: These happen to have identical begin phases, for now. We shouldn't hold
-// ourselves to this constraint, though. If the behavior diverges, we should
-// fork the function.
-const updateLegacyHiddenComponent = updateOffscreenComponent;
 
 function updateCacheComponent(
   current: Fiber | null,
@@ -3952,8 +3944,7 @@ function attemptEarlyBailoutIfNoScheduledUpdate(
         return null;
       }
     }
-    case OffscreenComponent:
-    case LegacyHiddenComponent: {
+    case OffscreenComponent: {
       // Need to check if the tree still needs to be deferred. This is
       // almost identical to the logic used in the normal update path,
       // so we'll just enter that. The only difference is we'll bail out
@@ -4234,16 +4225,6 @@ function beginWork(
     }
     case OffscreenComponent: {
       return updateOffscreenComponent(current, workInProgress, renderLanes);
-    }
-    case LegacyHiddenComponent: {
-      if (enableLegacyHidden) {
-        return updateLegacyHiddenComponent(
-          current,
-          workInProgress,
-          renderLanes,
-        );
-      }
-      break;
     }
     case CacheComponent: {
       if (enableCache) {

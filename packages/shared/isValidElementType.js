@@ -20,7 +20,6 @@ import {
   REACT_MEMO_TYPE,
   REACT_LAZY_TYPE,
   REACT_SCOPE_TYPE,
-  REACT_LEGACY_HIDDEN_TYPE,
   REACT_OFFSCREEN_TYPE,
   REACT_CACHE_TYPE,
   REACT_TRACING_MARKER_TYPE,
@@ -30,7 +29,6 @@ import {
   enableCacheElement,
   enableTransitionTracing,
   enableDebugTracing,
-  enableLegacyHidden,
 } from './ReactFeatureFlags';
 
 const REACT_CLIENT_REFERENCE: symbol = Symbol.for('react.client.reference');
@@ -48,7 +46,6 @@ export default function isValidElementType(type: mixed): boolean {
     type === REACT_STRICT_MODE_TYPE ||
     type === REACT_SUSPENSE_TYPE ||
     type === REACT_SUSPENSE_LIST_TYPE ||
-    (enableLegacyHidden && type === REACT_LEGACY_HIDDEN_TYPE) ||
     type === REACT_OFFSCREEN_TYPE ||
     (enableScopeAPI && type === REACT_SCOPE_TYPE) ||
     (enableCacheElement && type === REACT_CACHE_TYPE) ||

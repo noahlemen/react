@@ -180,19 +180,6 @@ describe('ReactSuspenseWithNoopRenderer', () => {
     return Promise.resolve().then(() => {});
   }
 
-  // Note: This is based on a similar component we use in www. We can delete
-  // once the extra div wrapper is no longer necessary.
-  function LegacyHiddenDiv({children, mode}) {
-    return (
-      <div hidden={mode === 'hidden'}>
-        <React.unstable_LegacyHidden
-          mode={mode === 'hidden' ? 'unstable-defer-without-hiding' : mode}>
-          {children}
-        </React.unstable_LegacyHidden>
-      </div>
-    );
-  }
-
   // @gate enableLegacyCache
   it("does not restart if there's a ping during initial render", async () => {
     function Bar(props) {
@@ -2805,111 +2792,6 @@ describe('ReactSuspenseWithNoopRenderer', () => {
       'Foo',
     ]);
     expect(root).toMatchRenderedOutput(<span prop="Foo" />);
-  });
-
-  // @gate enableLegacyCache && enableLegacyHidden
-  it('should not render hidden content while suspended on higher pri', async () => {
-    function Offscreen() {
-      Scheduler.log('Offscreen');
-      return 'Offscreen';
-    }
-    function App({showContent}) {
-      React.useLayoutEffect(() => {
-        Scheduler.log('Commit');
-      });
-      return (
-        <>
-          <LegacyHiddenDiv mode="hidden">
-            <Offscreen />
-          </LegacyHiddenDiv>
-          <Suspense fallback={<Text text="Loading..." />}>
-            {showContent ? <AsyncText text="A" ms={2000} /> : null}
-          </Suspense>
-        </>
-      );
-    }
-
-    // Initial render.
-    ReactNoop.render(<App showContent={false} />);
-    await waitFor(['Commit']);
-    expect(ReactNoop).toMatchRenderedOutput(<div hidden={true} />);
-
-    // Start transition.
-    React.startTransition(() => {
-      ReactNoop.render(<App showContent={true} />);
-    });
-
-    await waitForAll(['Suspend! [A]', 'Loading...']);
-    await resolveText('A');
-    await waitFor(['A', 'Commit']);
-    expect(ReactNoop).toMatchRenderedOutput(
-      <>
-        <div hidden={true} />
-        <span prop="A" />
-      </>,
-    );
-    await waitForAll(['Offscreen']);
-    expect(ReactNoop).toMatchRenderedOutput(
-      <>
-        <div hidden={true}>Offscreen</div>
-        <span prop="A" />
-      </>,
-    );
-  });
-
-  // @gate enableLegacyCache && enableLegacyHidden
-  it('should be able to unblock higher pri content before suspended hidden', async () => {
-    function Offscreen() {
-      Scheduler.log('Offscreen');
-      return 'Offscreen';
-    }
-    function App({showContent}) {
-      React.useLayoutEffect(() => {
-        Scheduler.log('Commit');
-      });
-      return (
-        <Suspense fallback={<Text text="Loading..." />}>
-          <LegacyHiddenDiv mode="hidden">
-            <AsyncText text="A" />
-            <Offscreen />
-          </LegacyHiddenDiv>
-          {showContent ? <AsyncText text="A" /> : null}
-        </Suspense>
-      );
-    }
-
-    // Initial render.
-    ReactNoop.render(<App showContent={false} />);
-    await waitFor(['Commit']);
-    expect(ReactNoop).toMatchRenderedOutput(<div hidden={true} />);
-
-    // Partially render through the hidden content.
-    await waitFor(['Suspend! [A]']);
-
-    // Start transition.
-    React.startTransition(() => {
-      ReactNoop.render(<App showContent={true} />);
-    });
-
-    await waitForAll(['Suspend! [A]', 'Loading...']);
-    await resolveText('A');
-    await waitFor(['A', 'Commit']);
-    expect(ReactNoop).toMatchRenderedOutput(
-      <>
-        <div hidden={true} />
-        <span prop="A" />
-      </>,
-    );
-    await waitForAll(['A', 'Offscreen']);
-    expect(ReactNoop).toMatchRenderedOutput(
-      <>
-        <div hidden={true}>
-          <span prop="A" />
-          Offscreen
-        </div>
-        <span prop="A" />
-      </>,
-    );
   });
 
   // @gate enableLegacyCache

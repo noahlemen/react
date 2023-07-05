@@ -34,9 +34,6 @@ export const REACT_DEBUG_TRACING_MODE_TYPE: symbol = Symbol.for(
   'react.debug_trace_mode',
 );
 export const REACT_OFFSCREEN_TYPE: symbol = Symbol.for('react.offscreen');
-export const REACT_LEGACY_HIDDEN_TYPE: symbol = Symbol.for(
-  'react.legacy_hidden',
-);
 export const REACT_CACHE_TYPE: symbol = Symbol.for('react.cache');
 export const REACT_TRACING_MARKER_TYPE: symbol = Symbol.for(
   'react.tracing_marker',

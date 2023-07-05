@@ -85,7 +85,6 @@ function getTestFlags() {
       enableUseSyncExternalStoreShim: !__VARIANT__,
       enableSuspenseList: releaseChannel === 'experimental' || www,
       enableOffscreen: releaseChannel === 'experimental' || www,
-      enableLegacyHidden: www,
 
       // If there's a naming conflict between scheduler and React feature flags, the
       // React ones take precedence.

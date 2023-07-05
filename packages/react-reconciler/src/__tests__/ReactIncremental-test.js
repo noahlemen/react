@@ -34,19 +34,6 @@ describe('ReactIncremental', () => {
     assertLog = InternalTestUtils.assertLog;
   });
 
-  // Note: This is based on a similar component we use in www. We can delete
-  // once the extra div wrapper is no longer necessary.
-  function LegacyHiddenDiv({children, mode}) {
-    return (
-      <div hidden={mode === 'hidden'}>
-        <React.unstable_LegacyHidden
-          mode={mode === 'hidden' ? 'unstable-defer-without-hiding' : mode}>
-          {children}
-        </React.unstable_LegacyHidden>
-      </div>
-    );
-  }
-
   it('should render a simple component', async () => {
     function Bar() {
       return <div>Hello World</div>;
@@ -256,13 +243,13 @@ describe('ReactIncremental', () => {
       return (
         <div>
           <Bar>{props.text}</Bar>
-          <LegacyHiddenDiv mode="hidden">
+          <React.unstable_Offscreen mode="hidden">
             <Middle>{props.text}</Middle>
-          </LegacyHiddenDiv>
+          </React.unstable_Offscreen>
           <Bar>{props.text}</Bar>
-          <LegacyHiddenDiv mode="hidden">
+          <React.unstable_Offscreen mode="hidden">
             <Middle>Footer</Middle>
-          </LegacyHiddenDiv>
+          </React.unstable_Offscreen>
         </div>
       );
     }
@@ -296,13 +283,13 @@ describe('ReactIncremental', () => {
       return (
         <div>
           <Bar>{props.text}</Bar>
-          <LegacyHiddenDiv mode="hidden">
+          <React.unstable_Offscreen mode="hidden">
             <Middle>{props.text}</Middle>
-          </LegacyHiddenDiv>
+          </React.unstable_Offscreen>
           <Bar>{props.text}</Bar>
-          <LegacyHiddenDiv mode="hidden">
+          <React.unstable_Offscreen mode="hidden">
             <Middle>Footer</Middle>
-          </LegacyHiddenDiv>
+          </React.unstable_Offscreen>
         </div>
       );
     }
@@ -1938,12 +1925,12 @@ describe('ReactIncremental', () => {
       ReactNoop.render(
         <Intl locale="fr">
           <ShowLocale />
-          <LegacyHiddenDiv mode="hidden">
+          <React.unstable_Offscreen mode="hidden">
             <ShowLocale />
             <Intl locale="ru">
               <ShowLocale />
             </Intl>
-          </LegacyHiddenDiv>
+          </React.unstable_Offscreen>
           <ShowLocale />
         </Intl>,
       );

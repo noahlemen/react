@@ -30,7 +30,6 @@ import type {OffscreenState} from './ReactFiberOffscreenComponent';
 import type {TracingMarkerInstance} from './ReactFiberTracingMarkerComponent';
 import type {Cache} from './ReactFiberCacheComponent';
 import {
-  enableLegacyHidden,
   enableHostSingletons,
   enableSuspenseCallback,
   enableScopeAPI,
@@ -67,7 +66,6 @@ import {
   IncompleteClassComponent,
   ScopeComponent,
   OffscreenComponent,
-  LegacyHiddenComponent,
   CacheComponent,
   TracingMarkerComponent,
 } from './ReactWorkTags';
@@ -1769,17 +1767,13 @@ function completeWork(
       }
       break;
     }
-    case OffscreenComponent:
-    case LegacyHiddenComponent: {
+    case OffscreenComponent: {
       popSuspenseHandler(workInProgress);
       popHiddenContext(workInProgress);
       const nextState: OffscreenState | null = workInProgress.memoizedState;
       const nextIsHidden = nextState !== null;
 
       // Schedule a Visibility effect if the visibility has changed
-      if (enableLegacyHidden && workInProgress.tag === LegacyHiddenComponent) {
-        // LegacyHidden doesn't do any hiding — it only pre-renders.
-      } else {
         if (current !== null) {
           const prevState: OffscreenState | null = current.memoizedState;
           const prevIsHidden = prevState !== null;
@@ -1793,7 +1787,6 @@ function completeWork(
             workInProgress.flags |= Visibility;
           }
         }
-      }
 
       if (!nextIsHidden || (workInProgress.mode & ConcurrentMode) === NoMode) {
         bubbleProperties(workInProgress);
@@ -1810,8 +1803,6 @@ function completeWork(
           // If so, we need to hide those nodes in the commit phase, so
           // schedule a visibility effect.
           if (
-            (!enableLegacyHidden ||
-              workInProgress.tag !== LegacyHiddenComponent) &&
             workInProgress.subtreeFlags & (Placement | Update)
           ) {
             workInProgress.flags |= Visibility;
